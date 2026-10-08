@@ -235,7 +235,7 @@ ol.steps { padding-left: 20px; margin: 0; display: grid; gap: 6px; max-width: 72
               <label class="f"><span class="row">Itérations <output id="iterOut"></output></span>
                 <input type="range" id="iter" min="1" max="110" value="69"></label>
               <label class="f"><span class="row">Graine aléatoire</span>
-                <span class="btns" style="flex-wrap:nowrap"><input type="number" id="seed" value="14" min="1"><button class="btn" id="dice" title="Nouvelle graine" aria-label="Nouvelle graine">⟳</button></span></label>
+                <span class="btns" style="flex-wrap:nowrap"><input type="number" id="seed" value="17" min="1"><button class="btn" id="dice" title="Nouvelle graine" aria-label="Nouvelle graine">⟳</button></span></label>
             </div>
             <div class="btns"><button class="btn primary" id="run">Simuler</button><button class="btn" id="forecast" title="Garder la branche actuelle et prolonger de 5 itérations">Prévoir +5 itérations</button></div>
           </div>
@@ -270,11 +270,12 @@ ol.steps { padding-left: 20px; margin: 0; display: grid; gap: 6px; max-width: 72
               <label class="f"><span class="row">σ phyllotaxie <output id="phsOut"></output></span><input type="range" id="phs" min="0" max="20" step="0.5" value="4"></label>
               <label class="f"><span class="row">Branchement μ <output id="brOut"></output></span><input type="range" id="br" min="5" max="85" value="38"></label>
               <label class="f"><span class="row">σ branchement <output id="brsOut"></output></span><input type="range" id="brs" min="0" max="30" value="22"></label>
+              <label class="f"><span class="row">Courbure entrenœuds <output id="bdOut"></output></span><input type="range" id="bd" min="0" max="20" step="0.5" value="7"></label>
             </div>
             <p class="hint">Sigmoïdes K / (1 + a·e<sup>−r t</sup>) du mémoire, t = âge en itérations.</p>
             <table class="matrix" id="growthTbl"></table>
             <div class="grid2">
-              <label class="f"><span class="row">Tropisme <output id="trOut"></output></span><input type="range" id="tr" min="-0.3" max="0.3" step="0.01" value="0.04"></label>
+              <label class="f"><span class="row">Tropisme <output id="trOut"></output></span><input type="range" id="tr" min="-0.1" max="0.1" step="0.002" value="0.012"></label>
               <label class="f"><span class="row">Échelle des longueurs <output id="lsOut"></output></span><input type="range" id="ls" min="0.5" max="4" step="0.1" value="1.6"></label>
             </div>
           </div>
@@ -288,7 +289,7 @@ ol.steps { padding-left: 20px; margin: 0; display: grid; gap: 6px; max-width: 72
             <label class="chk"><input type="checkbox" id="showLeaves" checked> Feuilles sur les pousses jeunes</label>
             <label class="chk"><input type="checkbox" id="showFruits" checked> Oranges (décor)</label>
             <label class="chk"><input type="checkbox" id="showDead"> Bourgeons morts g</label>
-            <label class="chk"><input type="checkbox" id="autoRotate"> Rotation automatique</label>
+            <label class="chk"><input type="checkbox" id="autoRotate" checked> Rotation automatique</label>
           </div>
         </details>
         <details>
@@ -531,27 +532,27 @@ const PRESETS = {
   orange1: {
     note: 'Matrice estimée sur la branche 1 (X = 53, Y = 338 observés), 69 itérations, phyllotaxie 138.19°.',
     H: [[0.02, 0.19, 0.71, 0.08], [0.05, 0.21, 0.67, 0.07], [0.02, 0.18, 0.71, 0.09], [0, 0.16, 0.8, 0.04]],
-    h1: [0.02, 0.19, 0.71, 0.08], N: 69, seed: 14, lateral: 'inherit', ph: 138.19, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.04,
+    h1: [0.02, 0.19, 0.71, 0.08], N: 69, seed: 17, lateral: 'inherit', ph: 138.19, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.012, bd: 7,
   },
   orange2: {
     note: 'Branche 2 (X = 84, Y = 612). Ramification plus forte : 45 itérations ici pour rester fluide.',
     H: [[0.01, 0.19, 0.66, 0.14], [0.03, 0.19, 0.64, 0.13], [0.01, 0.19, 0.63, 0.17], [0, 0.19, 0.8, 0.01]],
-    h1: [0.01, 0.19, 0.66, 0.14], N: 45, seed: 17, lateral: 'inherit', ph: 138.02, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.04,
+    h1: [0.01, 0.19, 0.66, 0.14], N: 45, seed: 1, lateral: 'inherit', ph: 138.02, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.012, bd: 7,
   },
   fib: {
     note: 'Matrice (0 1 ; 1/φ 1/φ²) entre retard C et ramification E. Comparez le taux du champ moyen (φ) à celui du processus réel.',
     H: [[0, 1, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 1 / PHI, 0, 1 / (PHI * PHI)]],
-    h1: [0, 1, 0, 0], N: 13, seed: 3, lateral: 'inherit', ph: 137.5, phs: 0, br: 40, brs: 0, ls: 6, tr: 0,
+    h1: [0, 1, 0, 0], N: 13, seed: 3, lateral: 'inherit', ph: 137.5, phs: 0, br: 40, brs: 0, ls: 6, tr: 0, bd: 0,
   },
   ex4: {
     note: 'Un bourgeon se dessèche, s\'allonge ou se ramifie avec la même probabilité 1/3 (exemple 4, fig. 2.14).',
     H: [[1, 0, 1, 1], [1, 0, 1, 1], [1, 0, 1, 1], [1, 0, 1, 1]].map((r) => r.map((v) => v / 3)),
-    h1: [1 / 3, 0, 1 / 3, 1 / 3], N: 20, seed: 5, lateral: 'inherit', ph: 137.5, phs: 2, br: 45, brs: 5, ls: 4, tr: 0.02,
+    h1: [1 / 3, 0, 1 / 3, 1 / 3], N: 20, seed: 5, lateral: 'inherit', ph: 137.5, phs: 2, br: 45, brs: 5, ls: 4, tr: 0.01, bd: 5,
   },
   bush: {
     note: 'Peu de retard, ramification soutenue, bourgeon latéral juvénile : un port buissonnant.',
     H: [[0.05, 0.1, 0.6, 0.25], [0.02, 0.1, 0.6, 0.28], [0.03, 0.12, 0.65, 0.2], [0.06, 0.3, 0.6, 0.04]],
-    h1: [0, 0, 1, 0], N: 32, seed: 9, lateral: '1', ph: 137.5, phs: 6, br: 50, brs: 12, ls: 2.4, tr: 0.08,
+    h1: [0, 0, 1, 0], N: 32, seed: 9, lateral: '1', ph: 137.5, phs: 6, br: 50, brs: 12, ls: 2.4, tr: 0.03, bd: 8,
   },
 };
 
@@ -613,7 +614,7 @@ function buildGrowthTable() {
     redraw(); drawGrowthChart();
   });
 }
-const sliders = [['iter', 'iterOut', (v) => v], ['ph', 'phOut', (v) => v + '°'], ['phs', 'phsOut', (v) => v + '°'], ['br', 'brOut', (v) => v + '°'], ['brs', 'brsOut', (v) => v + '°'], ['tr', 'trOut', (v) => v], ['ls', 'lsOut', (v) => '×' + v]];
+const sliders = [['iter', 'iterOut', (v) => v], ['ph', 'phOut', (v) => v + '°'], ['phs', 'phsOut', (v) => v + '°'], ['br', 'brOut', (v) => v + '°'], ['brs', 'brsOut', (v) => v + '°'], ['bd', 'bdOut', (v) => '±' + v + '°'], ['tr', 'trOut', (v) => v], ['ls', 'lsOut', (v) => '×' + v]];
 function syncOutputs() { for (const [id, out, f] of sliders) $(out).textContent = f($(id).value); }
 
 function applyPreset(name) {
@@ -621,7 +622,7 @@ function applyPreset(name) {
   state.H = p.H.map((r) => r.slice()); state.h1 = p.h1.slice();
   $('presetNote').textContent = p.note;
   $('iter').value = p.N; $('seed').value = p.seed; $('lateral').value = p.lateral;
-  $('ph').value = p.ph; $('phs').value = p.phs; $('br').value = p.br; $('brs').value = p.brs; $('ls').value = p.ls; $('tr').value = p.tr;
+  $('ph').value = p.ph; $('phs').value = p.phs; $('br').value = p.br; $('brs').value = p.brs; $('ls').value = p.ls; $('tr').value = p.tr; $('bd').value = p.bd;
   writeMatrix(); syncOutputs(); showRates(); run();
 }
 
@@ -629,7 +630,8 @@ function simParams(N) {
   return {
     H: state.H, h1: state.h1, iterations: N, seed: +$('seed').value || 1, lateral: lateralVal(),
     phyllo: { mean: +$('ph').value, sd: +$('phs').value },
-    branch: { mean: +$('br').value, sd: +$('brs').value, min: 5, max: 88 },
+    branch: { mean: +$('br').value, sd: +$('brs').value, min: 15, max: 88 },
+    bend: +$('bd').value,
     noise: { len: state.growth.length.sd ? 0.34 / 8 : 0, rad: 0.07 / 1.9 },
   };
 }
@@ -660,12 +662,14 @@ function initScene() {
   camera = new THREE.PerspectiveCamera(40, 1, 0.1, 5000);
   camera.position.set(60, 50, 90);
   controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true; controls.dampingFactor = 0.08;
-  scene.add(new THREE.HemisphereLight(0xf4f8ef, 0x4a5a40, 0.85));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(40, 120, 60); scene.add(sun);
+  controls.enableDamping = true; controls.dampingFactor = 0.08; controls.autoRotateSpeed = 1.2;
+  scene.add(new THREE.HemisphereLight(0xf4f8ef, 0x4a5a40, 0.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.85); sun.position.set(60, 120, 40); scene.add(sun);
+  const rim = new THREE.DirectionalLight(0xffe2c4, 0.35); rim.position.set(-80, 30, -60); scene.add(rim);
   const g = new THREE.CircleGeometry(1, 64); g.rotateX(-Math.PI / 2);
   ground = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.06 }));
   scene.add(ground);
+  controls.addEventListener('start', () => { $('autoRotate').checked = false; });
   new ResizeObserver(resize).observe(vp); resize();
   (function loop() { requestAnimationFrame(loop); controls.autoRotate = $('autoRotate').checked; controls.update(); renderer.render(scene, camera); })();
 }
@@ -1109,7 +1113,7 @@ $('run').addEventListener('click', run);
 $('dice').addEventListener('click', () => { $('seed').value = 1 + Math.floor(Math.random() * 9999); run(); });
 $('seed').addEventListener('change', run);
 $('iter').addEventListener('input', syncOutputs); $('iter').addEventListener('change', run);
-['ph', 'phs', 'br', 'brs'].forEach((id) => { $(id).addEventListener('input', syncOutputs); $(id).addEventListener('change', run); });
+['ph', 'phs', 'br', 'brs', 'bd'].forEach((id) => { $(id).addEventListener('input', syncOutputs); $(id).addEventListener('change', run); });
 ['tr', 'ls'].forEach((id) => $(id).addEventListener('input', () => { syncOutputs(); redraw(false); motifDirty = true; }));
 $('lateral').addEventListener('change', run);
 ['colorMode', 'showLeaves', 'showFruits', 'showDead'].forEach((id) => $(id).addEventListener('change', () => redraw(false)));

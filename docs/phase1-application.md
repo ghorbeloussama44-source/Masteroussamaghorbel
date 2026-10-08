@@ -12,7 +12,8 @@ seule application web, manipulable sans logiciel propriétaire, qui garde la com
   `B : f → g`, `C : f → f`, `D : f → Y f`, `E : f → X[f] f`. Chaque bourgeon garde en mémoire la
   dernière règle appliquée ; la suivante est tirée dans la ligne correspondante de `H`.
 - **Géométrie.** Tortue 3D : rotation de phyllotaxie autour de l'axe (α₁ ≈ 138.1°, σ = 4°),
-  angle de branchement ~ N(38°, 22°), tropisme réglable. Chaque organe garde ses tirages
+  angle de branchement ~ N(38°, 22°), courbure aléatoire de chaque entrenœud (±7° par défaut,
+  dans une direction quelconque autour de l'axe), tropisme réglable. Chaque organe garde ses tirages
   aléatoires, donc la même branche peut être affichée à n'importe quel âge.
 - **Croissance.** Longueur et rayons des entrenœuds selon les sigmoïdes ajustées dans le mémoire
   (éq. 2.178–2.182). Le curseur de temps montre le synchronisme développement / croissance.
