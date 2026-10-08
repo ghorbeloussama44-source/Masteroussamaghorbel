@@ -1,0 +1,5 @@
+# Seul le dossier app/ est servi ; on n'envoie pas les documents lourds du mémoire.
+*.pdf
+*.docx
+*.pptx
+test3dsmax/
