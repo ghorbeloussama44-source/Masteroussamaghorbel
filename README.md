@@ -12,6 +12,14 @@ Le projet est découpé en trois phases :
 | 2. Textile et patronage | Imprimé généré par la branche simulée, patron enfant gradé par croissance logistique, durée de port, réserve d'ourlet | onglet 2 de l'app, [`docs/phase2-textile-patronage.md`](docs/phase2-textile-patronage.md) |
 | 3. Intelligence artificielle | Inférence bayésienne ABC de la matrice H (fonctionnelle) et feuille de route IA | onglet 3 de l'app, [`docs/phase3-ia.md`](docs/phase3-ia.md) |
 
+## Mettre le site en ligne (Vercel)
+
+[![Déployer sur Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fghorbeloussama44-source%2FMasteroussamaghorbel&project-name=atelier-morphogenese)
+
+Ou : vercel.com → *Add New… → Project* → importer ce dépôt → *Deploy*. Aucune option à régler :
+`vercel.json` sert directement le dossier `app/` (site statique, pas de build). Chaque push sur
+`main` redéploie le site.
+
 ## Lancer l'application
 
 Aucune installation. Depuis la racine du dépôt :
