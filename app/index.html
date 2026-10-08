@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Atelier Morphogenèse</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : établi de laboratoire — panneau de réglages à gauche, scène et courbes à droite ; papier de patronage pour la phase 2. */
+:root {
+  --paper: #edf1ea;
+  --panel: #f8faf6;
+  --ink: #17231b;
+  --muted: #56655a;
+  --line: #cdd7ca;
+  --leaf: #2f6b3d;
+  --citrus: #d9670f;
+  --citrus-soft: #f6dcc4;
+  --scene: #e3e9df;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --good: #1f7a3a; --warn: #9a6400;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 6px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1612; --panel: #151f19; --ink: #e5ece3; --muted: #9aab9e; --line: #2a3a30;
+    --leaf: #7fbf8a; --citrus: #f08a35; --citrus-soft: #3a2614; --scene: #121b16;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --good: #6fcf8a; --warn: #e0a640;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0f1612; --panel: #151f19; --ink: #e5ece3; --muted: #9aab9e; --line: #2a3a30;
+  --leaf: #7fbf8a; --citrus: #f08a35; --citrus-soft: #3a2614; --scene: #121b16;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  --good: #6fcf8a; --warn: #e0a640;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 14px/1.5 var(--f-body); margin: 0; }
+.wrap { padding-inline: 16px; padding-block: 0 40px; max-width: 1480px; margin: 0 auto; }
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: var(--paper); border-bottom: 1px solid var(--line);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding-block: 12px;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+.brand h1 { font: 700 22px/1.1 var(--f-display); margin: 0; letter-spacing: -0.01em; }
+.brand h1 b { color: var(--citrus); font-weight: 700; }
+.brand span { color: var(--muted); font-size: 12px; }
+nav.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+nav.tabs button {
+  font: 500 13px var(--f-body); color: var(--muted); background: none; border: 1px solid transparent;
+  padding: 7px 12px; border-radius: 999px; cursor: pointer;
+}
+nav.tabs button .ph { font-family: var(--f-mono); font-size: 11px; margin-right: 6px; color: var(--citrus); }
+nav.tabs button[aria-selected="true"] { color: var(--ink); border-color: var(--line); background: var(--panel); }
+button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--citrus); outline-offset: 2px; }
+
+.lede { max-width: 72ch; color: var(--muted); margin: 18px 0 14px; }
+.lede strong { color: var(--ink); font-weight: 600; }
+
+.bench { display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .bench { grid-template-columns: 1fr; } .bench > .stage { order: -1; } header.top { position: static; } }
+aside.controls { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); min-width: 0; }
+details { border-bottom: 1px solid var(--line); }
+details:last-child { border-bottom: 0; }
+summary {
+  list-style: none; cursor: pointer; padding: 11px 14px; display: flex; justify-content: space-between; align-items: center;
+  font: 600 12px var(--f-body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink);
+}
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font-family: var(--f-mono); color: var(--muted); }
+details[open] summary::after { content: "–"; }
+.sec { padding: 0 14px 14px; display: grid; gap: 10px; }
+label.f { display: grid; gap: 4px; font-size: 12.5px; color: var(--muted); }
+label.f .row { display: flex; justify-content: space-between; gap: 8px; }
+label.f output, .num { font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--citrus); }
+input[type="number"], select, textarea {
+  font: 13px var(--f-mono); color: var(--ink); background: var(--paper); border: 1px solid var(--line);
+  border-radius: 4px; padding: 5px 6px; width: 100%; min-width: 0;
+}
+select { font-family: var(--f-body); }
+.hint { font-size: 12px; color: var(--muted); margin: 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn {
+  font: 500 13px var(--f-body); border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  border-radius: 4px; padding: 7px 11px; cursor: pointer;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--citrus); border-color: var(--citrus); color: #fff; }
+.btn.primary:hover { filter: brightness(1.05); }
+.chk { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+.chk input { accent-color: var(--citrus); }
+
+table.matrix { border-collapse: collapse; width: 100%; font-family: var(--f-mono); font-size: 12px; }
+table.matrix th { font-weight: 500; color: var(--muted); padding: 2px; text-align: center; }
+table.matrix th.rl { text-align: left; white-space: nowrap; }
+table.matrix td { padding: 2px; }
+table.matrix input { padding: 4px 3px; text-align: right; font-size: 12px; -moz-appearance: textfield; appearance: textfield; }
+table.matrix input::-webkit-outer-spin-button, table.matrix input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+table.matrix td.sum { color: var(--muted); text-align: right; padding-left: 4px; font-variant-numeric: tabular-nums; }
+.rules { font: 12px/1.6 var(--f-mono); color: var(--muted); margin: 0; padding: 0; list-style: none; }
+.rules b { color: var(--ink); font-weight: 500; }
+
+.stage { display: grid; gap: 16px; min-width: 0; }
+.viewport {
+  position: relative; background: var(--scene); border: 1px solid var(--line); border-radius: var(--r);
+  height: min(62vh, 620px); min-height: 340px; overflow: hidden;
+}
+.viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.hud {
+  position: absolute; left: 12px; top: 10px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none;
+}
+.chip {
+  font: 500 12px var(--f-mono); background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+  padding: 3px 8px; border-radius: 999px; font-variant-numeric: tabular-nums;
+}
+.chip i { font-style: normal; color: var(--muted); margin-right: 4px; }
+.chip.alert { border-color: var(--warn); color: var(--warn); }
+.timebar {
+  position: absolute; left: 12px; right: 12px; bottom: 10px; display: flex; gap: 10px; align-items: center;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 4px;
+}
+.timebar .btn { border-radius: 999px; padding: 5px 12px; }
+.timebar input { flex: 1; min-width: 0; }
+.timebar .num { font-size: 12px; white-space: nowrap; }
+.viewtip { position: absolute; right: 12px; bottom: 56px; font-size: 11.5px; color: var(--muted); pointer-events: none; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; min-width: 0; }
+.card h3 { font: 700 15px/1.25 var(--f-display); margin: 0 0 2px; text-wrap: balance; }
+.card .sub { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.chart { position: relative; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.tip {
+  position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+  padding: 6px 8px; font: 12px/1.45 var(--f-mono); color: var(--ink); box-shadow: 0 4px 14px rgba(0,0,0,.12);
+  white-space: nowrap; z-index: 3; font-variant-numeric: tabular-nums;
+}
+.tip .k { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.lstring { font: 12px/1.5 var(--f-mono); max-height: 110px; overflow: auto; word-break: break-all; background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 8px; margin: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; }
+.pill { display: inline-block; font: 500 11px var(--f-mono); padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; }
+.pill.good { color: var(--good); } .pill.warn { color: var(--warn); }
+
+.export { display: grid; gap: 6px; }
+.export textarea { height: 120px; font-size: 11.5px; }
+
+/* Phase 2 */
+.pattern-sheet {
+  background-color: var(--panel);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 20px 20px; border: 1px solid var(--line); border-radius: var(--r); overflow: auto; padding: 10px;
+}
+.pattern-sheet svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+.motif-box { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.motif-box svg { display: block; width: 100%; height: auto; }
+.tblwrap { overflow-x: auto; }
+table.data { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+table.data th { text-align: right; font-weight: 500; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+table.data td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data tr.sel td { background: var(--citrus-soft); }
+.sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.sizes label { font: 12px var(--f-mono); border: 1px solid var(--line); border-radius: 999px; padding: 3px 9px; cursor: pointer; display: inline-flex; gap: 5px; align-items: center; }
+.sizes input { accent-color: var(--citrus); margin: 0; }
+
+/* Phase 3 */
+.road { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 12px; }
+.road article { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 6px; align-content: start; }
+.road h4 { font: 700 14.5px/1.3 var(--f-display); margin: 0; text-wrap: balance; }
+.road p { margin: 0; font-size: 13px; color: var(--muted); }
+.road .tag { justify-self: start; }
+.tag.done { color: var(--good); } .tag.proto { color: var(--citrus); } .tag.rech { color: var(--s1); }
+.progress { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.progress div { height: 100%; width: 0; background: var(--citrus); transition: width .1s; }
+h2.sect { font: 700 20px/1.2 var(--f-display); margin: 28px 0 4px; text-wrap: balance; }
+.prose { max-width: 72ch; }
+.prose p { margin: 0 0 10px; }
+.eq { font-family: var(--f-mono); font-size: 13px; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; overflow-x: auto; white-space: pre; }
+ol.steps { padding-left: 20px; margin: 0; display: grid; gap: 6px; max-width: 72ch; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 999px; font-size: 13px; z-index: 50; }
+@media (prefers-reduced-motion: reduce) { .progress div { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Atelier <b>Morphogenèse</b></h1>
+      <span>d'après le mémoire de Mastère d'O. Ghorbel · EPT 2014</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Phases du projet">
+      <button role="tab" id="tab-sim" aria-selected="true" aria-controls="p-sim"><span class="ph">1</span>Simulation 3D</button>
+      <button role="tab" id="tab-tex" aria-selected="false" aria-controls="p-tex"><span class="ph">2</span>Textile &amp; patronage</button>
+      <button role="tab" id="tab-ia" aria-selected="false" aria-controls="p-ia"><span class="ph">3</span>IA &amp; inférence</button>
+      <button role="tab" id="tab-guide" aria-selected="false" aria-controls="p-guide"><span class="ph">?</span>Mode d'emploi</button>
+    </nav>
+  </header>
+
+  <!-- ============ PHASE 1 ============ -->
+  <section id="p-sim" role="tabpanel" aria-labelledby="tab-sim">
+    <p class="lede">Une branche d'oranger simulée par un <strong>0L-system stochastique piloté par une chaîne de Markov</strong> : chaque bourgeon <span class="num">f</span> meurt, attend, s'allonge ou se ramifie selon la matrice <span class="num">H</span> estimée dans le mémoire. Les entrenœuds grandissent ensuite selon les sigmoïdes mesurées. Faites glisser le temps pour voir développement et croissance avancer ensemble.</p>
+    <div class="bench">
+      <aside class="controls" aria-label="Réglages de la simulation">
+        <details open>
+          <summary>Scénario</summary>
+          <div class="sec">
+            <label class="f">Point de départ
+              <select id="preset">
+                <option value="orange1">Oranger, branche 1 (H éq. 2.159)</option>
+                <option value="orange2">Oranger, branche 2 (H éq. 2.162)</option>
+                <option value="fib">Lapins de Fibonacci (H éq. 2.65)</option>
+                <option value="ex4">Exemple 4 du mémoire (règles équiprobables)</option>
+                <option value="bush">Buisson dense (exploration)</option>
+              </select>
+            </label>
+            <p class="hint" id="presetNote"></p>
+            <div class="grid2">
+              <label class="f"><span class="row">Itérations <output id="iterOut"></output></span>
+                <input type="range" id="iter" min="1" max="110" value="69"></label>
+              <label class="f"><span class="row">Graine aléatoire</span>
+                <span class="btns" style="flex-wrap:nowrap"><input type="number" id="seed" value="14" min="1"><button class="btn" id="dice" title="Nouvelle graine" aria-label="Nouvelle graine">⟳</button></span></label>
+            </div>
+            <div class="btns"><button class="btn primary" id="run">Simuler</button><button class="btn" id="forecast" title="Garder la branche actuelle et prolonger de 5 itérations">Prévoir +5 itérations</button></div>
+          </div>
+        </details>
+        <details open>
+          <summary>Matrice de Markov H</summary>
+          <div class="sec">
+            <ul class="rules">
+              <li><b>B</b> f → g&nbsp;&nbsp;mort du bourgeon</li>
+              <li><b>C</b> f → f&nbsp;&nbsp;retard de croissance</li>
+              <li><b>D</b> f → Y f&nbsp;&nbsp;allongement</li>
+              <li><b>E</b> f → X[f] f&nbsp;&nbsp;ramification</li>
+            </ul>
+            <p class="hint">Ligne = règle appliquée au pas précédent, colonne = règle suivante. Chaque ligne est renormalisée à 1.</p>
+            <table class="matrix" id="matrix"></table>
+            <label class="f">État d'un nouveau bourgeon latéral
+              <select id="lateral">
+                <option value="inherit">hérite de E (lecture du mémoire)</option>
+                <option value="1">juvénile : démarre en C</option>
+                <option value="2">démarre en D</option>
+              </select>
+            </label>
+            <dl class="kv" id="rates"></dl>
+            <div class="btns"><button class="btn" id="fitPhi" title="Ajuste la colonne E pour que la population de bourgeons croisse comme la suite de Fibonacci">Caler la croissance sur φ</button><button class="btn" id="resetH">Revenir au préréglage</button></div>
+          </div>
+        </details>
+        <details>
+          <summary>Géométrie et croissance</summary>
+          <div class="sec">
+            <div class="grid2">
+              <label class="f"><span class="row">Phyllotaxie α₁ <output id="phOut"></output></span><input type="range" id="ph" min="90" max="180" step="0.1" value="138.1"></label>
+              <label class="f"><span class="row">σ phyllotaxie <output id="phsOut"></output></span><input type="range" id="phs" min="0" max="20" step="0.5" value="4"></label>
+              <label class="f"><span class="row">Branchement μ <output id="brOut"></output></span><input type="range" id="br" min="5" max="85" value="38"></label>
+              <label class="f"><span class="row">σ branchement <output id="brsOut"></output></span><input type="range" id="brs" min="0" max="30" value="22"></label>
+            </div>
+            <p class="hint">Sigmoïdes K / (1 + a·e<sup>−r t</sup>) du mémoire, t = âge en itérations.</p>
+            <table class="matrix" id="growthTbl"></table>
+            <div class="grid2">
+              <label class="f"><span class="row">Tropisme <output id="trOut"></output></span><input type="range" id="tr" min="-0.3" max="0.3" step="0.01" value="0.04"></label>
+              <label class="f"><span class="row">Échelle des longueurs <output id="lsOut"></output></span><input type="range" id="ls" min="0.5" max="4" step="0.1" value="1.6"></label>
+            </div>
+          </div>
+        </details>
+        <details>
+          <summary>Affichage</summary>
+          <div class="sec">
+            <label class="f">Couleur des entrenœuds
+              <select id="colorMode"><option value="type">par type (X ramifiant / Y simple)</option><option value="age">par âge</option></select>
+            </label>
+            <label class="chk"><input type="checkbox" id="showLeaves" checked> Feuilles sur les pousses jeunes</label>
+            <label class="chk"><input type="checkbox" id="showFruits" checked> Oranges (décor)</label>
+            <label class="chk"><input type="checkbox" id="showDead"> Bourgeons morts g</label>
+            <label class="chk"><input type="checkbox" id="autoRotate"> Rotation automatique</label>
+          </div>
+        </details>
+        <details>
+          <summary>Exporter</summary>
+          <div class="sec export">
+            <div class="btns">
+              <button class="btn" data-export="max">MAXScript (3ds Max)</button>
+              <button class="btn" data-export="obj">Squelette OBJ</button>
+              <button class="btn" data-export="lstr">Chaîne L-system</button>
+              <button class="btn" data-export="json">Paramètres JSON</button>
+            </div>
+            <textarea id="exportBox" readonly aria-label="Contenu exporté" placeholder="Le texte copié apparaît ici."></textarea>
+            <p class="hint">Le script MAXScript recrée la branche en cônes dans 3ds Max, comme le plugin du mémoire.</p>
+          </div>
+        </details>
+      </aside>
+
+      <div class="stage">
+        <div class="viewport" id="viewport">
+          <div class="hud" id="hud"></div>
+          <div class="viewtip">glisser : tourner · molette / pincer : zoom</div>
+          <div class="timebar">
+            <button class="btn" id="play" aria-label="Lire la croissance">▶ Lire</button>
+            <input type="range" id="age" min="0" max="69" value="69" aria-label="Âge observé">
+            <span class="num" id="ageOut"></span>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <h3>Population d'organes par itération</h3>
+            <p class="sub">Trait plein : cette simulation. Tirets : espérance du processus de branchement (Galton–Watson multitype).</p>
+            <div class="chart" id="chartCounts"></div>
+            <div class="legend" id="legendCounts"></div>
+            <label class="chk" style="margin-top:6px"><input type="checkbox" id="logScale"> Échelle logarithmique</label>
+          </div>
+          <div class="card">
+            <h3>Croissance d'un entrenœud selon son âge</h3>
+            <p class="sub">Longueur et rayons (cm). La zone ocre marque les âges présents dans la branche affichée.</p>
+            <div class="chart" id="chartGrowth"></div>
+            <div class="legend" id="legendGrowth"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Chaîne formelle observée</h3>
+          <p class="sub">X : entrenœud ramifiant · Y : entrenœud simple · [ ] : ramification · f : bourgeon vivant. C'est la « chaîne observable » de la Proposition 1.</p>
+          <pre class="lstring" id="lstring"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 2 ============ -->
+  <section id="p-tex" role="tabpanel" aria-labelledby="tab-tex" hidden>
+    <p class="lede">La branche simulée devient un <strong>imprimé textile</strong>, et la méthode sigmoïde du mémoire sert à <strong>grader un patron enfant</strong> : les mensurations suivent une croissance logistique, ce qui donne la durée de port de chaque taille et la réserve d'ourlet à prévoir. Les mensurations par défaut sont illustratives et doivent être recalées sur des données anthropométriques.</p>
+    <div class="bench">
+      <aside class="controls" aria-label="Réglages textile">
+        <details open>
+          <summary>Imprimé</summary>
+          <div class="sec">
+            <label class="f">Raccord
+              <select id="repeat">
+                <option value="halfdrop">Demi-saut (half-drop)</option>
+                <option value="straight">Droit</option>
+                <option value="mirror">Miroir</option>
+                <option value="vogel">Semis phyllotaxique (angle d'or)</option>
+              </select>
+            </label>
+            <label class="f">Vue de la branche
+              <select id="proj"><option value="front">De face</option><option value="top">De dessus (rosace)</option></select>
+            </label>
+            <div class="grid2">
+              <label class="f"><span class="row">Rapport (cm) <output id="tileOut"></output></span><input type="range" id="tile" min="4" max="40" value="10"></label>
+              <label class="f"><span class="row">Épaisseur trait <output id="strokeOut"></output></span><input type="range" id="stroke" min="0.3" max="3" step="0.1" value="1"></label>
+            </div>
+            <label class="f">Coloris
+              <select id="palette">
+                <option value="citrus">Verger : vert sauge, orange</option>
+                <option value="indigo">Indigo sur écru</option>
+                <option value="mono">Monochrome encre</option>
+                <option value="night">Nuit : or sur bleu nuit</option>
+              </select>
+            </label>
+            <div class="btns"><button class="btn" id="copyMotif">Copier le SVG du motif</button><button class="btn" id="refreshMotif">Reprendre la branche actuelle</button></div>
+          </div>
+        </details>
+        <details open>
+          <summary>Patron gradé</summary>
+          <div class="sec">
+            <p class="hint">Tailles EN 13402 : la taille enfant est la stature en cm.</p>
+            <div class="sizes" id="sizes"></div>
+            <label class="f">Taille remplie avec l'imprimé
+              <select id="focusSize"></select>
+            </label>
+            <div class="grid2">
+              <label class="f"><span class="row">Aisance poitrine <output id="easeOut"></output></span><input type="range" id="ease" min="0" max="20" value="8"></label>
+              <label class="f"><span class="row">Valeur de couture <output id="saOut"></output></span><input type="range" id="sa" min="0" max="2" step="0.5" value="1"></label>
+            </div>
+            <label class="chk"><input type="checkbox" id="hemRes" checked> Ajouter la réserve d'ourlet évolutive</label>
+            <label class="chk"><input type="checkbox" id="fillMotif" checked> Placer l'imprimé dans la pièce</label>
+            <div class="btns"><button class="btn" id="copyPattern">Copier le patron SVG (échelle 1:1)</button></div>
+          </div>
+        </details>
+        <details>
+          <summary>Recaler une mensuration</summary>
+          <div class="sec">
+            <p class="hint">Collez des couples « âge ; valeur » (une ligne chacun). L'ajustement balaie K et linéarise le logit, comme au §2.3.3.4 du mémoire.</p>
+            <label class="f">Mensuration
+              <select id="fitWhich"></select>
+            </label>
+            <textarea id="fitData" rows="6" aria-label="Données âge et valeur"></textarea>
+            <div class="btns"><button class="btn" id="doFit">Ajuster et appliquer</button></div>
+            <p class="hint" id="fitOut"></p>
+          </div>
+        </details>
+      </aside>
+      <div class="stage">
+        <div class="cards">
+          <div class="card">
+            <h3>Imprimé issu de la simulation</h3>
+            <p class="sub" id="motifSub"></p>
+            <div class="motif-box" id="motifBox"></div>
+          </div>
+          <div class="card">
+            <h3>Durée de port et réserve d'ourlet</h3>
+            <p class="sub">Déduites de l'inverse de la logistique de stature. P(6 mois) : probabilité de changer de taille dans les six mois, si le séjour dans une taille suit une loi exponentielle.</p>
+            <div class="tblwrap"><table class="data" id="sizeTbl"></table></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Demi-devant gradé en nid</h3>
+          <p class="sub" id="patSub">Milieu devant au pli, droit-fil vertical. Bande claire = valeur de couture. Grille de fond : 1 cm.</p>
+          <div class="pattern-sheet" id="patternBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHASE 3 ============ -->
+  <section id="p-ia" role="tabpanel" aria-labelledby="tab-ia" hidden>
+    <p class="lede">Dans le mémoire, la matrice H a été estimée à la main, en faisant varier un taux de retard jusqu'à retrouver le rapport Y/X observé. Ici, une <strong>inférence bayésienne par simulation (ABC)</strong> fait ce travail automatiquement et donne en plus l'incertitude. C'est la première brique d'une IA capable de lire une plante réelle et d'en déduire ses règles de croissance.</p>
+    <div class="bench">
+      <aside class="controls" aria-label="Réglages de l'inférence">
+        <details open>
+          <summary>Observation</summary>
+          <div class="sec">
+            <div class="grid2">
+              <label class="f">Entrenœuds X observés<input type="number" id="obsX" value="53" min="0"></label>
+              <label class="f">Entrenœuds Y observés<input type="number" id="obsY" value="338" min="0"></label>
+              <label class="f">Bourgeons vivants f<input type="number" id="obsF" value="15" min="0" placeholder="inconnu"></label>
+              <label class="f">Bourgeons morts g<input type="number" id="obsG" value="40" min="0" placeholder="inconnu"></label>
+              <label class="f">Itérations (âge)<input type="number" id="obsN" value="69" min="5" max="150"></label>
+              <label class="f">Simulations<input type="number" id="abcSims" value="20000" min="1000" step="1000"></label>
+            </div>
+            <p class="hint">Valeurs par défaut : branche 1 du mémoire (X = 53, Y = 338, f₆₉ = 15, g₆₉ = 40, 69 itérations). Videz f ou g s'ils sont inconnus : avec X et Y seuls, trois probabilités libres restent mal déterminées et le nuage s'élargit.</p>
+            <div class="btns"><button class="btn primary" id="abcRun">Lancer l'inférence</button><button class="btn" id="abcFromSim">Observer la simulation actuelle</button></div>
+            <div class="progress" aria-hidden="true"><div id="abcBar"></div></div>
+            <p class="hint" id="abcStatus">Prêt.</p>
+          </div>
+        </details>
+        <details open>
+          <summary>Résultat</summary>
+          <div class="sec">
+            <dl class="kv" id="abcResult"><dt>Lancez l'inférence</dt><dd>—</dd></dl>
+            <div class="btns"><button class="btn" id="abcUse" disabled>Simuler avec ces probabilités</button></div>
+            <p class="hint">Hypothèse de cette première version : les quatre lignes de H sont identiques (pas de mémoire). Le passage à H complète est décrit dans la feuille de route.</p>
+          </div>
+        </details>
+      </aside>
+      <div class="stage">
+        <div class="card">
+          <h3>Postérieur : mort B contre ramification E</h3>
+          <p class="sub">Gris : toutes les simulations (lois a priori uniformes). Orange : les 2 % les plus proches de l'observation. La croix marque la moyenne a posteriori.</p>
+          <div class="chart" id="chartAbc"></div>
+        </div>
+        <h2 class="sect">Feuille de route IA</h2>
+        <p class="hint" style="margin-bottom:10px">Statuts : <span class="pill tag done">dans l'atelier</span> fonctionne dans cette page · <span class="pill tag proto">prototype</span> faisable en quelques semaines · <span class="pill tag rech">recherche</span> sujet de thèse ou d'article.</p>
+        <div class="road" id="road"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GUIDE ============ -->
+  <section id="p-guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+    <h2 class="sect">Prendre l'atelier en main</h2>
+    <ol class="steps">
+      <li><b>Choisir un scénario</b> dans « Scénario ». « Oranger, branche 1 » reprend la matrice estimée dans le mémoire.</li>
+      <li><b>Faire glisser le temps</b> sous la scène 3D, ou appuyer sur ▶. Les entrenœuds s'allongent et s'épaississent selon leur âge pendant que de nouveaux organes apparaissent.</li>
+      <li><b>Modifier H</b> : augmenter la colonne E densifie la ramification, augmenter B fait mourir les bourgeons. Le bloc sous la matrice donne le taux de croissance attendu.</li>
+      <li><b>Comparer</b> la courbe pleine (votre tirage) aux tirets (espérance). L'écart montre la variabilité d'un processus stochastique.</li>
+      <li><b>Passer en phase 2</b> : la branche affichée devient un imprimé et remplit un patron gradé.</li>
+      <li><b>Passer en phase 3</b> : donner des comptages observés et laisser l'inférence retrouver les probabilités.</li>
+    </ol>
+    <h2 class="sect">Le modèle en quatre équations</h2>
+    <div class="prose">
+      <p>Système de réécriture (Proposition 2 du mémoire), axiome <span class="num">f</span> :</p>
+      <div class="eq">A : g → g        B : f → g        C : f → f
+D : f → Y f      E : f → X [f] f</div>
+      <p>Les règles sont les états d'une chaîne de Markov. Un bourgeon qui vient d'appliquer la règle i applique ensuite j avec la probabilité H<sub>ij</sub>.</p>
+      <p>Lecture du mémoire, en champ moyen (éq. 2.67–2.70), avec h<sub>n</sub> = h<sub>1</sub> H<sup>n−1</sup> :</p>
+      <div class="eq">f(n+1) = f(n) · (1 − h_n(B) + h_n(E))</div>
+      <p>Lecture proposée ici : un processus de Galton–Watson multitype. La matrice moyenne compte les descendants par état, et la croissance asymptotique est sa racine de Perron ρ(M) :</p>
+      <div class="eq">M_ij = H_ij · [j ≠ B] + H_iE · [j = état latéral]       taux = ρ(M)</div>
+      <p>Pour la matrice de Fibonacci du mémoire (éq. 2.65), le champ moyen donne exactement φ ≈ 1.618, mais le vrai processus croît à ρ(M) ≈ 1.558, car un bourgeon qui se ramifie transmet son état à ses deux descendants. Le bouton « Caler la croissance sur φ » corrige H pour que ρ(M) = φ : c'est le « conditionnement Fibonacci » que le mémoire laissait en perspective.</p>
+      <p>Croissance des entrenœuds (éq. 2.178–2.182), t = âge en itérations :</p>
+      <div class="eq">Long(t) = 8 / (1 + 7.85 e^(−0.0075 t))      Rb(t) = 1.9 / (1 + 25.02 e^(−0.0338 t))
+Rs(t) = 1.3 / (1 + 18.89 e^(−0.0385 t))     phyllotaxie ≈ 138.1° ± 4°     branchement ~ N(38°, 22°)</div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="core.js"></script>
+<script>
+(function () {
+'use strict';
+const M = window.Morpho;
+const $ = (id) => document.getElementById(id);
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const fmt = (x, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : '—');
+const RL = ['B', 'C', 'D', 'E'];
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+function copyText(text, label) {
+  const box = $('exportBox');
+  box.value = text;
+  const fallback = () => { box.focus(); box.select(); toast(label + ' : texte sélectionné, copiez-le (Ctrl+C)'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => toast(label + ' copié'), fallback);
+  } else fallback();
+}
+
+/* ---------------- Préréglages ---------------- */
+const PHI = M.PHI;
+const PRESETS = {
+  orange1: {
+    note: 'Matrice estimée sur la branche 1 (X = 53, Y = 338 observés), 69 itérations, phyllotaxie 138.19°.',
+    H: [[0.02, 0.19, 0.71, 0.08], [0.05, 0.21, 0.67, 0.07], [0.02, 0.18, 0.71, 0.09], [0, 0.16, 0.8, 0.04]],
+    h1: [0.02, 0.19, 0.71, 0.08], N: 69, seed: 14, lateral: 'inherit', ph: 138.19, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.04,
+  },
+  orange2: {
+    note: 'Branche 2 (X = 84, Y = 612). Ramification plus forte : 45 itérations ici pour rester fluide.',
+    H: [[0.01, 0.19, 0.66, 0.14], [0.03, 0.19, 0.64, 0.13], [0.01, 0.19, 0.63, 0.17], [0, 0.19, 0.8, 0.01]],
+    h1: [0.01, 0.19, 0.66, 0.14], N: 45, seed: 17, lateral: 'inherit', ph: 138.02, phs: 4, br: 38, brs: 22, ls: 1.6, tr: 0.04,
+  },
+  fib: {
+    note: 'Matrice (0 1 ; 1/φ 1/φ²) entre retard C et ramification E. Comparez le taux du champ moyen (φ) à celui du processus réel.',
+    H: [[0, 1, 0, 0], [0, 0, 0, 1], [0, 1, 0, 0], [0, 1 / PHI, 0, 1 / (PHI * PHI)]],
+    h1: [0, 1, 0, 0], N: 13, seed: 3, lateral: 'inherit', ph: 137.5, phs: 0, br: 40, brs: 0, ls: 6, tr: 0,
+  },
+  ex4: {
+    note: 'Un bourgeon se dessèche, s\'allonge ou se ramifie avec la même probabilité 1/3 (exemple 4, fig. 2.14).',
+    H: [[1, 0, 1, 1], [1, 0, 1, 1], [1, 0, 1, 1], [1, 0, 1, 1]].map((r) => r.map((v) => v / 3)),
+    h1: [1 / 3, 0, 1 / 3, 1 / 3], N: 20, seed: 5, lateral: 'inherit', ph: 137.5, phs: 2, br: 45, brs: 5, ls: 4, tr: 0.02,
+  },
+  bush: {
+    note: 'Peu de retard, ramification soutenue, bourgeon latéral juvénile : un port buissonnant.',
+    H: [[0.05, 0.1, 0.6, 0.25], [0.02, 0.1, 0.6, 0.28], [0.03, 0.12, 0.65, 0.2], [0.06, 0.3, 0.6, 0.04]],
+    h1: [0, 0, 1, 0], N: 32, seed: 9, lateral: '1', ph: 137.5, phs: 6, br: 50, brs: 12, ls: 2.4, tr: 0.08,
+  },
+};
+
+const state = {
+  H: null, h1: null, growth: JSON.parse(JSON.stringify(M.THESIS_GROWTH)),
+  sim: null, geo: null, age: 69, preset: 'orange1', playing: false,
+};
+
+/* ---------------- Contrôles phase 1 ---------------- */
+function buildMatrixTable() {
+  const t = $('matrix');
+  let html = '<tr><th class="rl">de \\ vers</th>' + RL.map((r) => `<th>${r}</th>`).join('') + '<th>Σ</th></tr>';
+  for (let i = 0; i < 4; i++) {
+    html += `<tr><th class="rl">${RL[i]}</th>` + RL.map((_, j) => `<td><input type="number" step="0.01" min="0" max="1" id="h${i}${j}" aria-label="H ${RL[i]} vers ${RL[j]}"></td>`).join('') + `<td class="sum" id="hs${i}"></td></tr>`;
+  }
+  html += '<tr><th class="rl">h₁</th>' + RL.map((_, j) => `<td><input type="number" step="0.01" min="0" max="1" id="h1${j}" aria-label="Loi initiale ${RL[j]}"></td>`).join('') + '<td class="sum" id="hs4"></td></tr>';
+  t.innerHTML = html;
+  t.addEventListener('input', () => { readMatrix(); showRates(); });
+  t.addEventListener('change', () => run());
+}
+function writeMatrix() {
+  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) $(`h${i}${j}`).value = +state.H[i][j].toFixed(3);
+  for (let j = 0; j < 4; j++) $(`h1${j}`).value = +state.h1[j].toFixed(3);
+  readMatrix();
+}
+function readMatrix() {
+  const H = [], h1 = [];
+  for (let i = 0; i < 4; i++) {
+    const row = []; for (let j = 0; j < 4; j++) row.push(parseFloat($(`h${i}${j}`).value) || 0);
+    H.push(row); $(`hs${i}`).textContent = row.reduce((a, b) => a + b, 0).toFixed(2);
+  }
+  for (let j = 0; j < 4; j++) h1.push(parseFloat($(`h1${j}`).value) || 0);
+  $('hs4').textContent = h1.reduce((a, b) => a + b, 0).toFixed(2);
+  state.H = M.normalizeMatrix(H); state.h1 = M.normalizeRow(h1);
+}
+function lateralVal() { const v = $('lateral').value; return v === 'inherit' ? 'inherit' : +v; }
+function showRates() {
+  const g = M.growthRates(state.H, lateralVal());
+  const pi = g.stationary;
+  const tag = (x) => x > 1.001 ? '<span class="pill warn">croissance</span>' : x < 0.999 ? '<span class="pill">extinction</span>' : '<span class="pill">stable</span>';
+  $('rates').innerHTML =
+    `<dt>Loi stationnaire B C D E</dt><dd>${pi.map((p) => p.toFixed(2)).join(' ')}</dd>` +
+    `<dt>Taux champ moyen (mémoire)</dt><dd>${g.meanField.toFixed(4)}</dd>` +
+    `<dt>Taux Galton–Watson ρ(M)</dt><dd>${g.galtonWatson.toFixed(4)}</dd>` +
+    `<dt>Régime</dt><dd>${tag(g.galtonWatson)}</dd>` +
+    `<dt>Écart à φ = 1.6180</dt><dd>${(g.galtonWatson - PHI).toFixed(4)}</dd>`;
+}
+function buildGrowthTable() {
+  const rows = [['length', 'Longueur'], ['rb', 'Rayon base'], ['rs', 'Rayon sommet']];
+  let html = '<tr><th class="rl"></th><th>K</th><th>a</th><th>r</th></tr>';
+  for (const [k, lab] of rows) {
+    html += `<tr><th class="rl">${lab}</th>` + ['K', 'a', 'r'].map((p) => `<td><input type="number" step="any" id="g_${k}_${p}" value="${state.growth[k][p]}" aria-label="${lab} ${p}"></td>`).join('') + '</tr>';
+  }
+  $('growthTbl').innerHTML = html;
+  $('growthTbl').addEventListener('change', () => {
+    for (const [k] of rows) for (const p of ['K', 'a', 'r']) {
+      const v = parseFloat($(`g_${k}_${p}`).value); if (Number.isFinite(v) && v > 0) state.growth[k][p] = v;
+    }
+    redraw(); drawGrowthChart();
+  });
+}
+const sliders = [['iter', 'iterOut', (v) => v], ['ph', 'phOut', (v) => v + '°'], ['phs', 'phsOut', (v) => v + '°'], ['br', 'brOut', (v) => v + '°'], ['brs', 'brsOut', (v) => v + '°'], ['tr', 'trOut', (v) => v], ['ls', 'lsOut', (v) => '×' + v]];
+function syncOutputs() { for (const [id, out, f] of sliders) $(out).textContent = f($(id).value); }
+
+function applyPreset(name) {
+  const p = PRESETS[name]; state.preset = name;
+  state.H = p.H.map((r) => r.slice()); state.h1 = p.h1.slice();
+  $('presetNote').textContent = p.note;
+  $('iter').value = p.N; $('seed').value = p.seed; $('lateral').value = p.lateral;
+  $('ph').value = p.ph; $('phs').value = p.phs; $('br').value = p.br; $('brs').value = p.brs; $('ls').value = p.ls; $('tr').value = p.tr;
+  writeMatrix(); syncOutputs(); showRates(); run();
+}
+
+function simParams(N) {
+  return {
+    H: state.H, h1: state.h1, iterations: N, seed: +$('seed').value || 1, lateral: lateralVal(),
+    phyllo: { mean: +$('ph').value, sd: +$('phs').value },
+    branch: { mean: +$('br').value, sd: +$('brs').value, min: 5, max: 88 },
+    noise: { len: state.growth.length.sd ? 0.34 / 8 : 0, rad: 0.07 / 1.9 },
+  };
+}
+function run() {
+  readMatrix(); showRates();
+  const N = +$('iter').value;
+  state.sim = M.simulate(simParams(N));
+  const n = state.sim.iterations;
+  $('age').max = n; $('age').value = n; state.age = n;
+  redraw(true);
+  drawCountsChart(); drawGrowthChart();
+  $('lstring').textContent = M.toLString(state.sim);
+  motifDirty = true;
+}
+
+/* ---------------- Scène 3D ---------------- */
+let renderer, scene, camera, controls, branchMesh, leafMesh, fruitMesh, deadMesh, ground;
+let tmpM, tmpQ, tmpV, tmpS, UP, cBark, cX, cYoung, tmpC;
+
+function initScene() {
+  tmpM = new THREE.Matrix4(); tmpQ = new THREE.Quaternion(); tmpV = new THREE.Vector3(); tmpS = new THREE.Vector3(); UP = new THREE.Vector3(0, 1, 0);
+  cBark = new THREE.Color(); cX = new THREE.Color(); cYoung = new THREE.Color(); tmpC = new THREE.Color();
+  const vp = $('viewport');
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  vp.prepend(renderer.domElement);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(40, 1, 0.1, 5000);
+  camera.position.set(60, 50, 90);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  scene.add(new THREE.HemisphereLight(0xf4f8ef, 0x4a5a40, 0.85));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(40, 120, 60); scene.add(sun);
+  const g = new THREE.CircleGeometry(1, 64); g.rotateX(-Math.PI / 2);
+  ground = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.06 }));
+  scene.add(ground);
+  new ResizeObserver(resize).observe(vp); resize();
+  (function loop() { requestAnimationFrame(loop); controls.autoRotate = $('autoRotate').checked; controls.update(); renderer.render(scene, camera); })();
+}
+function resize() {
+  const vp = $('viewport'); const w = vp.clientWidth, h = vp.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / Math.max(1, h); camera.updateProjectionMatrix();
+}
+function makeInstanced(geo, mat, count, old) {
+  if (old) { scene.remove(old); old.geometry.dispose(); old.material.dispose(); old.dispose && old.dispose(); }
+  const m = new THREE.InstancedMesh(geo, mat, Math.max(1, count));
+  m.count = count; scene.add(m); return m;
+}
+function hash(i) { let x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+
+function redraw(refit) {
+  if (!state.sim) return;
+  const k = state.age;
+  const geo = M.geometry(state.sim, k, { growth: state.growth, tropism: +$('tr').value, lengthScale: +$('ls').value });
+  state.geo = geo;
+  if (!renderer) { hud(); return; }
+  cBark.set(css('--muted').startsWith('#9') ? '#8c6f4e' : '#6e5434');
+  cX.set(css('--citrus')); cYoung.set(css('--leaf'));
+  const byAge = $('colorMode').value === 'age';
+
+  const cyl = new THREE.CylinderGeometry(0.68, 1, 1, 7, 1, false); cyl.translate(0, 0.5, 0);
+  branchMesh = makeInstanced(cyl, new THREE.MeshLambertMaterial({ color: 0xffffff }), geo.segs.length, branchMesh);
+  const maxAge = Math.max(1, k);
+  geo.segs.forEach((s, idx) => {
+    tmpV.set(s.dir[0], s.dir[1], s.dir[2]); tmpQ.setFromUnitVectors(UP, tmpV);
+    tmpS.set(s.rb, s.len, s.rb);
+    tmpM.compose(tmpV.set(s.start[0], s.start[1], s.start[2]), tmpQ, tmpS);
+    branchMesh.setMatrixAt(idx, tmpM);
+    if (byAge) tmpC.copy(cYoung).lerp(cBark, Math.min(1, s.age / maxAge));
+    else tmpC.copy(s.type === 'X' ? cX : cBark);
+    branchMesh.setColorAt(idx, tmpC);
+  });
+  branchMesh.instanceMatrix.needsUpdate = true; if (branchMesh.instanceColor) branchMesh.instanceColor.needsUpdate = true;
+
+  // feuilles : pousses de moins de 30 itérations
+  const leafSegs = $('showLeaves').checked ? geo.segs.filter((s) => s.age < 30) : [];
+  const lg = new THREE.SphereGeometry(1, 8, 6); lg.scale(0.45, 0.06, 1); lg.translate(0, 0, 1);
+  leafMesh = makeInstanced(lg, new THREE.MeshLambertMaterial({ color: new THREE.Color(css('--leaf')) }), leafSegs.length, leafMesh);
+  const e = new THREE.Euler();
+  leafSegs.forEach((s, idx) => {
+    const sz = 1.6 + 1.6 * Math.min(1, s.age / 8);
+    e.set(-0.5 + hash(s.i) * 0.6, hash(s.i + 9) * Math.PI * 2, 0.3 * (hash(s.i + 3) - 0.5));
+    tmpQ.setFromEuler(e); tmpS.set(sz, sz, sz);
+    tmpM.compose(tmpV.set(s.end[0], s.end[1], s.end[2]), tmpQ, tmpS);
+    leafMesh.setMatrixAt(idx, tmpM);
+  });
+  leafMesh.instanceMatrix.needsUpdate = true;
+
+  // oranges : sur certains entrenœuds ramifiants assez âgés
+  const fruitSegs = $('showFruits').checked ? geo.segs.filter((s) => s.type === 'X' && s.age > 12 && hash(s.i + 51) < 0.22) : [];
+  const fg = new THREE.SphereGeometry(1, 14, 10);
+  fruitMesh = makeInstanced(fg, new THREE.MeshLambertMaterial({ color: 0xe8780f }), fruitSegs.length, fruitMesh);
+  fruitSegs.forEach((s, idx) => {
+    const r = 1.2 + 1.6 * Math.min(1, (s.age - 12) / 25);
+    tmpQ.identity(); tmpS.set(r, r, r);
+    tmpM.compose(tmpV.set(s.end[0], s.end[1] - r * 1.1, s.end[2]), tmpQ, tmpS);
+    fruitMesh.setMatrixAt(idx, tmpM);
+  });
+  fruitMesh.instanceMatrix.needsUpdate = true;
+
+  // bourgeons morts
+  const ends = new Map(geo.segs.map((s) => [s.i, s.end]));
+  const deadPts = $('showDead').checked ? state.sim.dead.filter((d) => d.at <= k).map((d) => (d.node < 0 ? [0, 0, 0] : ends.get(d.node))).filter(Boolean) : [];
+  deadMesh = makeInstanced(new THREE.SphereGeometry(0.35, 6, 4), new THREE.MeshBasicMaterial({ color: 0x8a8f86 }), deadPts.length, deadMesh);
+  deadPts.forEach((p, idx) => { tmpQ.identity(); tmpS.set(1, 1, 1); tmpM.compose(tmpV.set(p[0], p[1], p[2]), tmpQ, tmpS); deadMesh.setMatrixAt(idx, tmpM); });
+  deadMesh.instanceMatrix.needsUpdate = true;
+
+  if (refit) fitCamera(geo.bounds);
+  hud();
+}
+function fitCamera(b) {
+  const cx = (b[0] + b[1]) / 2, cy = (b[2] + b[3]) / 2, cz = (b[4] + b[5]) / 2;
+  const size = Math.max(b[1] - b[0], b[3] - b[2], b[5] - b[4], 10);
+  controls.target.set(cx, cy, cz);
+  const d = size * 1.5;
+  camera.position.set(cx + d * 0.6, cy + d * 0.25, cz + d * 0.8);
+  camera.near = size / 200; camera.far = size * 40; camera.updateProjectionMatrix();
+  ground.scale.setScalar(size * 0.7); ground.position.set(cx, Math.min(0, b[2]) - 0.2, cz);
+}
+function hud() {
+  const s = state.sim, k = state.age, h = s.hist;
+  const chips = [
+    ['âge', `${k} / ${s.iterations}`], ['X', h.X[k]], ['Y', h.Y[k]], ['f vivants', h.f[k]], ['g morts', h.g[k]],
+    ['Y/X', h.X[k] ? (h.Y[k] / h.X[k]).toFixed(2) : '—'],
+  ];
+  let html = chips.map(([a, b]) => `<span class="chip"><i>${a}</i>${b}</span>`).join('');
+  if (s.truncated) html += '<span class="chip alert">arrêt à 40 000 organes : réduisez les itérations</span>';
+  else if (h.f[s.iterations] === 0) html += '<span class="chip alert">tous les bourgeons sont morts : essayez une autre graine</span>';
+  $('hud').innerHTML = html;
+  $('ageOut').textContent = `itération ${k}`;
+}
+
+/* ---------------- Graphiques (SVG + survol) ---------------- */
+function lineChart(host, series, opts) {
+  const W = Math.max(300, host.clientWidth || 560), H = 240, m = { l: 46, r: 12, t: 10, b: 30 };
+  const xs = opts.x; const n = xs.length;
+  const logY = !!opts.log;
+  const allY = series.flatMap((s) => s.values).filter(Number.isFinite);
+  let ymin = logY ? 1 : 0, ymax = Math.max(1e-9, ...allY);
+  if (opts.ymax) ymax = opts.ymax;
+  const tf = (v) => (logY ? Math.log10(Math.max(1, v)) : v);
+  const y0 = tf(ymin), y1 = tf(ymax) * 1.05 || 1;
+  const X = (x) => m.l + ((x - xs[0]) / Math.max(1e-9, xs[n - 1] - xs[0])) * (W - m.l - m.r);
+  const Y = (v) => H - m.b - ((tf(v) - y0) / Math.max(1e-9, y1 - y0)) * (H - m.t - m.b);
+  const muted = css('--muted'), line = css('--line');
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.label}">`;
+  // grille + ticks
+  const ticks = [];
+  if (logY) { for (let p = 0; Math.pow(10, p) <= ymax * 1.05; p++) ticks.push(Math.pow(10, p)); }
+  else { const step = niceStep(ymax / 4); for (let v = 0; v <= ymax * 1.05; v += step) ticks.push(v); }
+  for (const t of ticks) svg += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="${line}" stroke-width="1"/><text x="${m.l - 6}" y="${Y(t) + 4}" text-anchor="end" font-size="11" fill="${muted}" font-family="IBM Plex Mono, monospace">${shortNum(t)}</text>`;
+  const xstep = niceStep((xs[n - 1] - xs[0]) / 6) || 1;
+  for (let x = Math.ceil(xs[0] / xstep) * xstep; x <= xs[n - 1] + 1e-9; x += xstep) svg += `<text x="${X(x)}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="${muted}" font-family="IBM Plex Mono, monospace">${shortNum(x)}</text>`;
+  svg += `<text x="${W - m.r}" y="${H - 2}" text-anchor="end" font-size="11" fill="${muted}">${opts.xlabel}</text>`;
+  if (opts.band) svg += `<rect x="${X(opts.band[0])}" y="${m.t}" width="${Math.max(0, X(opts.band[1]) - X(opts.band[0]))}" height="${H - m.t - m.b}" fill="${css('--citrus')}" opacity="0.1"/>`;
+  for (const s of series) {
+    const d = s.values.map((v, i) => (Number.isFinite(v) ? `${i ? 'L' : 'M'}${X(xs[i]).toFixed(1)},${Y(v).toFixed(1)}` : '')).join('');
+    svg += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" ${s.dashed ? 'stroke-dasharray="5 4" opacity="0.85"' : ''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  svg += `<line id="xh" x1="0" x2="0" y1="${m.t}" y2="${H - m.b}" stroke="${muted}" stroke-width="1" visibility="hidden"/>`;
+  svg += `<rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" class="hit"/></svg>`;
+  host.innerHTML = svg + '<div class="tip" hidden></div>';
+  const el = host.querySelector('svg'), tip = host.querySelector('.tip'), xh = host.querySelector('#xh');
+  const hit = host.querySelector('.hit');
+  function move(ev) {
+    const r = el.getBoundingClientRect();
+    const px = ((ev.clientX - r.left) / r.width) * W;
+    const t = (px - m.l) / (W - m.l - m.r);
+    const i = Math.max(0, Math.min(n - 1, Math.round(t * (n - 1))));
+    xh.setAttribute('x1', X(xs[i])); xh.setAttribute('x2', X(xs[i])); xh.setAttribute('visibility', 'visible');
+    tip.hidden = false;
+    tip.innerHTML = `<div>${opts.xlabel} ${shortNum(xs[i])}</div>` + series.filter((s) => !s.hideTip).map((s) => `<div><span class="k" style="background:${s.color}"></span>${s.name} ${fmtVal(s.values[i])}</div>`).join('');
+    const tx = ((X(xs[i])) / W) * r.width;
+    tip.style.left = (tx > r.width * 0.6 ? tx - tip.offsetWidth - 12 : tx + 12) + 'px';
+    tip.style.top = '8px';
+  }
+  hit.addEventListener('pointermove', move);
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; xh.setAttribute('visibility', 'hidden'); });
+}
+function niceStep(raw) {
+  if (!(raw > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(raw))); const f = raw / p;
+  return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+}
+function shortNum(v) { return Math.abs(v) >= 1000 ? (v / 1000).toFixed(v % 1000 ? 1 : 0) + 'k' : +v.toFixed(2) + ''; }
+function fmtVal(v) { return Number.isFinite(v) ? (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(2)) : '—'; }
+function legend(host, items) {
+  host.innerHTML = items.map(([name, color, dashed]) => `<span><i style="background:${dashed ? `repeating-linear-gradient(90deg, ${color} 0 5px, transparent 5px 8px)` : color}"></i>${name}</span>`).join('');
+}
+
+function drawCountsChart() {
+  const s = state.sim; if (!s) return;
+  const N = s.iterations;
+  const ex = M.branchingExpectation(state.H, state.h1, N, lateralVal());
+  const xs = Array.from({ length: N + 1 }, (_, i) => i);
+  const C = [['Y simple', 'Y', '--s1'], ['X ramifiant', 'X', '--s2'], ['f vivants', 'f', '--s3'], ['g morts', 'g', '--s4']];
+  const series = [];
+  for (const [name, key, tok] of C) series.push({ name, values: s.hist[key].slice(0, N + 1), color: css(tok) });
+  for (const [name, key, tok] of C) series.push({ name: name + ' (espérance)', values: ex[key].slice(0, N + 1), color: css(tok), dashed: true });
+  lineChart($('chartCounts'), series, { x: xs, xlabel: 'itération', label: 'Nombre d\'organes par itération', log: $('logScale').checked });
+  legend($('legendCounts'), C.map(([n, , t]) => [n, css(t)]).concat([['espérance', css('--muted'), true]]));
+}
+function drawGrowthChart() {
+  const G = state.growth; const T = 120;
+  const xs = Array.from({ length: T + 1 }, (_, i) => i);
+  const series = [
+    { name: 'Longueur', values: xs.map((t) => M.sigmoid(G.length.K, G.length.a, G.length.r, t)), color: css('--s1') },
+    { name: 'Rayon base', values: xs.map((t) => M.sigmoid(G.rb.K, G.rb.a, G.rb.r, t)), color: css('--s2') },
+    { name: 'Rayon sommet', values: xs.map((t) => M.sigmoid(G.rs.K, G.rs.a, G.rs.r, t)), color: css('--s3') },
+  ];
+  lineChart($('chartGrowth'), series, { x: xs, xlabel: 'âge (itérations)', label: 'Croissance sigmoïde', band: [0, Math.min(T, state.age)] });
+  legend($('legendGrowth'), series.map((s) => [s.name, s.color]));
+}
+
+/* ---------------- Lecture du temps ---------------- */
+let playTimer = null;
+function setAge(k) { state.age = k; $('age').value = k; redraw(false); drawGrowthChart(); }
+function togglePlay() {
+  if (playTimer) { clearInterval(playTimer); playTimer = null; $('play').textContent = '▶ Lire'; return; }
+  const n = state.sim.iterations; let k = state.age >= n ? 0 : state.age;
+  $('play').textContent = '❚❚ Pause';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  playTimer = setInterval(() => {
+    k = reduce ? n : k + 1; setAge(Math.min(k, n));
+    if (k >= n) togglePlay();
+  }, Math.max(40, 5000 / Math.max(1, n)));
+}
+
+/* ---------------- Prévision ---------------- */
+function forecast() {
+  // même graine, 5 itérations de plus : la topologie existante est conservée (tirages identiques au début)
+  const N = state.sim.iterations + 5;
+  $('iter').max = Math.max(+$('iter').max, N); $('iter').value = N; syncOutputs(); run();
+  toast('Prévision : 5 itérations ajoutées à la branche actuelle');
+}
+
+/* ================= PHASE 2 : TEXTILE ================= */
+const PALETTES = {
+  citrus: { bg: '#e9efe4', stem: '#3d5a3a', leaf: '#6f9a63', fruit: '#e07a1f' },
+  indigo: { bg: '#f1ece0', stem: '#22355e', leaf: '#3f5d96', fruit: '#22355e' },
+  mono: { bg: '#f4f4f1', stem: '#1d1f1c', leaf: '#55594f', fruit: '#1d1f1c' },
+  night: { bg: '#18233a', stem: '#d8b25a', leaf: '#9e8a4c', fruit: '#f0c66b' },
+};
+let motifDirty = true, motifCache = null;
+function motifPaths(proj) {
+  // projection 2D de la branche à l'âge affiché
+  const geo = state.geo; if (!geo || !geo.segs.length) return null;
+  const P = proj === 'top' ? (p) => [p[0], p[2]] : (p) => [p[0], -p[1]];
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (const s of geo.segs) for (const p of [P(s.start), P(s.end)]) { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); }
+  const size = Math.max(x1 - x0, y1 - y0, 1e-6);
+  const nrm = (p) => [((p[0] - (x0 + x1) / 2) / size), ((p[1] - (y0 + y1) / 2) / size)];
+  return { segs: geo.segs.map((s) => ({ a: nrm(P(s.start)), b: nrm(P(s.end)), w: s.rb / size, type: s.type, age: s.age, i: s.i })) };
+}
+function motifGroup(mp, unit, pal, strokeK) {
+  // motif centré en 0, occupant ~unit
+  let g = '';
+  const f = (v) => (v * unit).toFixed(2);
+  const stems = mp.segs.map((s) => `M${f(s.a[0])} ${f(s.a[1])}L${f(s.b[0])} ${f(s.b[1])}`);
+  const thick = mp.segs.filter((s) => s.age > 25), thin = mp.segs.filter((s) => s.age <= 25);
+  const pathOf = (arr) => arr.map((s) => `M${f(s.a[0])} ${f(s.a[1])}L${f(s.b[0])} ${f(s.b[1])}`).join('');
+  g += `<path d="${pathOf(thick)}" stroke="${pal.stem}" stroke-width="${(unit * 0.006 * strokeK * 1.8).toFixed(3)}" stroke-linecap="round" fill="none"/>`;
+  g += `<path d="${pathOf(thin)}" stroke="${pal.stem}" stroke-width="${(unit * 0.006 * strokeK).toFixed(3)}" stroke-linecap="round" fill="none"/>`;
+  const leaves = mp.segs.filter((s) => s.age < 30);
+  for (const s of leaves) {
+    const ang = (hash(s.i + 9) * 360).toFixed(0);
+    g += `<ellipse cx="${f(s.b[0])}" cy="${f(s.b[1])}" rx="${(unit * 0.012).toFixed(2)}" ry="${(unit * 0.028).toFixed(2)}" transform="rotate(${ang} ${f(s.b[0])} ${f(s.b[1])}) translate(0 ${(-unit * 0.026).toFixed(2)})" fill="${pal.leaf}" opacity="0.9"/>`;
+  }
+  for (const s of mp.segs.filter((s) => s.type === 'X' && s.age > 12 && hash(s.i + 51) < 0.22)) g += `<circle cx="${f(s.b[0])}" cy="${f(s.b[1])}" r="${(unit * 0.022).toFixed(2)}" fill="${pal.fruit}"/>`;
+  return g;
+}
+function motifSVG(opts) {
+  const mp = motifPaths(opts.proj); if (!mp) return '';
+  const pal = PALETTES[opts.palette]; const T = opts.tile; // cm
+  const unit = T * 0.86;
+  const grp = motifGroup(mp, unit, pal, opts.stroke);
+  const cols = 4, rows = 3; const W = T * cols, H = T * rows;
+  let uses = '';
+  if (opts.repeat === 'vogel') {
+    const n = 46; const c = T * 0.5;
+    for (let k = 1; k <= n; k++) {
+      const r = c * Math.sqrt(k), th = k * 137.508;
+      const x = W / 2 + r * Math.cos(th * Math.PI / 180), y = H / 2 + r * Math.sin(th * Math.PI / 180);
+      if (x < -T || x > W + T || y < -T || y > H + T) continue;
+      uses += `<use href="#m" transform="translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${(th % 360).toFixed(1)}) scale(0.42)"/>`;
+    }
+  } else {
+    for (let i = -1; i <= cols; i++) for (let j = -1; j <= rows; j++) {
+      let x = (i + 0.5) * T, y = (j + 0.5) * T, tr = '';
+      if (opts.repeat === 'halfdrop' && (i & 1)) y += T / 2;
+      if (opts.repeat === 'mirror' && (i & 1)) tr = ' scale(-1 1)';
+      uses += `<use href="#m" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})${tr}"/>`;
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${W} ${H}" width="${W}cm" height="${H}cm"><defs><g id="m">${grp}</g><clipPath id="cl"><rect width="${W}" height="${H}"/></clipPath></defs><rect width="${W}" height="${H}" fill="${pal.bg}"/><g clip-path="url(#cl)">${uses}</g></svg>`;
+}
+function textileOpts() { return { proj: $('proj').value, palette: $('palette').value, tile: +$('tile').value, stroke: +$('stroke').value, repeat: $('repeat').value }; }
+function drawMotif() {
+  const o = textileOpts();
+  $('tileOut').textContent = o.tile + ' cm'; $('strokeOut').textContent = '×' + o.stroke;
+  const svg = motifSVG(o);
+  motifCache = svg;
+  $('motifBox').innerHTML = svg ? svg.replace(/width="[\d.]+cm" height="[\d.]+cm"/, '') : '<p class="hint" style="padding:14px">Lancez une simulation en phase 1 pour obtenir une branche.</p>';
+  const s = state.sim;
+  $('motifSub').textContent = s ? `Branche de ${state.geo.segs.length} entrenœuds (âge ${state.age}) · rapport ${o.tile} × ${o.tile} cm · aperçu sur ${o.tile * 4} × ${o.tile * 3} cm.` : '';
+  drawPattern();
+}
+
+const SIZES = [92, 104, 116, 128, 140, 152];
+let selectedSizes = new Set(SIZES), childModel = JSON.parse(JSON.stringify(M.CHILD_GROWTH));
+function buildSizes() {
+  $('sizes').innerHTML = SIZES.map((s) => `<label><input type="checkbox" value="${s}" checked> T${s}</label>`).join('');
+  $('sizes').addEventListener('change', (e) => { const v = +e.target.value; e.target.checked ? selectedSizes.add(v) : selectedSizes.delete(v); drawPattern(); });
+  $('focusSize').innerHTML = SIZES.map((s) => `<option value="${s}" ${s === 116 ? 'selected' : ''}>T${s}</option>`).join('');
+  $('fitWhich').innerHTML = Object.entries(childModel).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+  $('fitData').value = '2;86\n4;102\n6;116\n8;128\n10;139\n12;150\n14;162';
+}
+function drawSizeTable() {
+  const tab = M.sizeTable(SIZES, childModel);
+  const focus = +$('focusSize').value;
+  $('sizeTbl').innerHTML = '<tr><th>Taille</th><th>Âge</th><th>Poitrine</th><th>Dos</th><th>Port</th><th>P(6 mois)</th><th>Ourlet +</th></tr>' +
+    tab.map((r) => `<tr class="${r.size === focus ? 'sel' : ''}"><td>T${r.size}</td><td>${r.age.toFixed(1)} a</td><td>${r.m.chest.toFixed(1)}</td><td>${r.m.backLen.toFixed(1)}</td><td>${r.months.toFixed(0)} mois</td><td>${(r.pMove6m * 100).toFixed(0)} %</td><td>${r.hemReserve.toFixed(1)} cm</td></tr>`).join('');
+  return tab;
+}
+function drawPattern() {
+  const tab = drawSizeTable();
+  const ease = +$('ease').value, sa = +$('sa').value;
+  $('easeOut').textContent = ease + ' cm'; $('saOut').textContent = sa + ' cm';
+  const focus = +$('focusSize').value;
+  const sizes = SIZES.filter((s) => selectedSizes.has(s) || s === focus);
+  const blocks = sizes.map((s) => {
+    const r = tab.find((t) => t.size === s);
+    return { s, b: M.frontBlock(r.m, { ease, hem: $('hemRes').checked ? r.hemReserve : 0 }), r };
+  });
+  const pad = 3;
+  const W = Math.max(...blocks.map((x) => x.b.width)) + pad * 2 + 6, H = Math.max(...blocks.map((x) => x.b.length)) + pad * 2 + 2;
+  const ink = css('--ink'), muted = css('--muted'), cit = css('--citrus'), line = css('--line');
+  const ramp = (i) => { const t = blocks.length > 1 ? i / (blocks.length - 1) : 1; return `color-mix(in oklab, ${css('--leaf')} ${Math.round(100 - t * 70)}%, ${ink})`; };
+  let defs = '', body = '';
+  const fb = blocks.find((x) => x.s === focus);
+  if ($('fillMotif').checked && motifCache && fb) {
+    const o = textileOpts(); const pal = PALETTES[o.palette]; const T = o.tile;
+    const mp = motifPaths(o.proj);
+    defs += `<pattern id="pm" patternUnits="userSpaceOnUse" width="${T}" height="${T * (o.repeat === 'halfdrop' ? 2 : 1)}"><rect width="${T}" height="${T * 2}" fill="${pal.bg}"/><g transform="translate(${T / 2} ${T / 2})">${motifGroup(mp, T * 0.86, pal, o.stroke)}</g>${o.repeat === 'halfdrop' ? `<g transform="translate(0 ${T})">${motifGroup(mp, T * 0.86, pal, o.stroke)}</g><g transform="translate(${T} ${T})">${motifGroup(mp, T * 0.86, pal, o.stroke)}</g>` : ''}</pattern>`;
+  }
+  body += `<g transform="translate(${pad} ${pad})">`;
+  if (fb) {
+    if (sa > 0) body += `<path d="${fb.b.d}" fill="none" stroke="${cit}" stroke-opacity="0.18" stroke-width="${sa * 2}" stroke-linejoin="round"/>`;
+    body += `<path d="${fb.b.d}" fill="${defs ? 'url(#pm)' : css('--citrus-soft')}" stroke="none"/>`;
+  }
+  blocks.forEach((x, i) => {
+    const isF = x.s === focus;
+    body += `<path d="${x.b.d}" fill="none" stroke="${isF ? cit : ramp(i)}" stroke-width="${isF ? 0.22 : 0.12}"/>`;
+    body += `<text x="${(x.b.width + 0.6).toFixed(2)}" y="${x.b.length.toFixed(2)}" font-size="1.1" fill="${isF ? cit : muted}" font-family="IBM Plex Mono, monospace">T${x.s}</text>`;
+  });
+  if (fb) {
+    const b = fb.b;
+    body += `<line x1="0" x2="${b.W}" y1="${b.armD}" y2="${b.armD}" stroke="${muted}" stroke-width="0.06" stroke-dasharray="0.5 0.3"/>`;
+    body += `<line x1="0" x2="${b.W}" y1="${b.waist}" y2="${b.waist}" stroke="${muted}" stroke-width="0.06" stroke-dasharray="0.5 0.3"/>`;
+    body += `<text x="0.4" y="${b.armD - 0.4}" font-size="0.9" fill="${muted}">ligne de poitrine</text><text x="0.4" y="${b.waist - 0.4}" font-size="0.9" fill="${muted}">ligne de taille</text>`;
+    const gx = b.W * 0.82, gy0 = b.armD + 2, gy1 = b.waist + 3;
+    body += `<line x1="${gx}" x2="${gx}" y1="${gy0}" y2="${gy1}" stroke="${ink}" stroke-width="0.1"/><path d="M${gx - 0.5} ${gy0 + 1}L${gx} ${gy0}L${gx + 0.5} ${gy0 + 1}M${gx - 0.5} ${gy1 - 1}L${gx} ${gy1}L${gx + 0.5} ${gy1 - 1}" stroke="${ink}" stroke-width="0.1" fill="none"/>`;
+    body += `<text x="${gx + 0.6}" y="${(gy0 + gy1) / 2}" font-size="0.9" fill="${ink}" transform="rotate(90 ${gx + 0.6} ${(gy0 + gy1) / 2})">DROIT-FIL</text>`;
+    body += `<text x="-0.5" y="${b.length * 0.6}" font-size="0.9" fill="${ink}" transform="rotate(-90 -0.5 ${b.length * 0.6})" text-anchor="middle">MILIEU DEVANT · AU PLI</text>`;
+    if ($('hemRes').checked) body += `<line x1="0" x2="${b.width}" y1="${b.length - fb.r.hemReserve}" y2="${b.length - fb.r.hemReserve}" stroke="${cit}" stroke-width="0.08" stroke-dasharray="0.3 0.25"/><text x="${b.W * 0.1}" y="${b.length - fb.r.hemReserve - 0.4}" font-size="0.85" fill="${cit}">réserve d'ourlet +${fb.r.hemReserve.toFixed(1)} cm</text>`;
+    const lx = 1.4, ly = b.armD + 3.5;
+    body += `<g font-family="IBM Plex Sans, sans-serif" fill="${ink}" paint-order="stroke" stroke="${css('--panel')}" stroke-width="0.25"><text x="${lx}" y="${ly}" font-size="1.2" font-weight="600">DEVANT T${focus}</text><text x="${lx}" y="${ly + 1.4}" font-size="0.85">couper 1 au pli</text><text x="${lx}" y="${ly + 2.6}" font-size="0.85">${fb.r.age.toFixed(1)} ans · port ≈ ${fb.r.months.toFixed(0)} mois</text></g>`;
+  }
+  body += '</g>';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-2} 0 ${W + 2} ${H}" width="${W + 2}cm" height="${H}cm"><defs>${defs}</defs>${body}</svg>`;
+  $('patternBox').innerHTML = svg.replace(/width="[\d.]+cm" height="[\d.]+cm"/, `style="width:${Math.min(900, (W + 2) * 18)}px"`);
+  state.patternSVG = svg;
+  $('patSub').textContent = `Demi-devant, milieu devant au pli, droit-fil vertical. Bande claire : valeur de couture ${sa} cm. Grille de fond indicative. Le SVG copié est à l'échelle 1:1 (${(W + 2).toFixed(0)} × ${H.toFixed(0)} cm).`;
+}
+function doFit() {
+  const key = $('fitWhich').value;
+  const pts = $('fitData').value.split(/\n+/).map((l) => l.split(/[;,\t ]+/).map(Number)).filter((p) => p.length >= 2 && p.every(Number.isFinite));
+  if (pts.length < 3) { $('fitOut').textContent = 'Il faut au moins 3 lignes « âge ; valeur ».'; return; }
+  const fit = M.fitSigmoid(pts.map((p) => p[0]), pts.map((p) => p[1]));
+  if (!fit) { $('fitOut').textContent = 'Ajustement impossible avec ces données.'; return; }
+  childModel[key] = { ...childModel[key], K: fit.K, a: fit.a, r: fit.r };
+  $('fitOut').textContent = `${childModel[key].label} : K = ${fit.K.toFixed(2)}, a = ${fit.a.toFixed(3)}, r = ${fit.r.toFixed(4)}, corrélation du logit ${fit.rp.toFixed(4)}, écart-type résiduel ${fit.sd.toFixed(2)}. Appliqué au patron.`;
+  drawPattern();
+}
+
+/* ================= PHASE 3 : IA ================= */
+let abcResult = null;
+function runABC() {
+  const opt = (id) => ($(id).value === '' ? undefined : +$(id).value);
+  const obs = { X: +$('obsX').value, Y: +$('obsY').value, f: opt('obsF'), g: opt('obsG') };
+  const N = +$('obsN').value, sims = Math.min(200000, +$('abcSims').value || 20000);
+  const gen = M.abc(obs, N, sims, (Date.now() & 0xffff) + 1, 60000);
+  $('abcRun').disabled = true; $('abcStatus').textContent = 'Simulation en cours…';
+  function step() {
+    const t0 = performance.now(); let r;
+    do { r = gen.next().value; } while (!r.done && performance.now() - t0 < 30);
+    $('abcBar').style.width = (r.progress * 100).toFixed(0) + '%';
+    if (!r.done) { requestAnimationFrame(step); return; }
+    $('abcRun').disabled = false;
+    if (r.all.length < 50) { $('abcStatus').textContent = 'Trop peu de simulations valides : augmentez le nombre de simulations.'; return; }
+    const sum = M.abcSummary(r.all, 0.02);
+    abcResult = { sum, all: r.all, obs, N };
+    $('abcStatus').textContent = `${r.all.length} simulations valides, ${sum.keep.length} retenues (distance ≤ ${sum.eps.toFixed(3)}).`;
+    const names = ['B mort', 'C retard', 'D allongement', 'E ramification'];
+    const g = M.growthRates([sum.mean, sum.mean, sum.mean, sum.mean]);
+    $('abcResult').innerHTML = names.map((nm, i) => `<dt>${nm}</dt><dd>${sum.mean[i].toFixed(3)} ± ${sum.sd[i].toFixed(3)}</dd>`).join('') +
+      `<dt>Taux de croissance</dt><dd>${g.galtonWatson.toFixed(4)}</dd><dt>Mémoire (branche 1)</dt><dd>0.02 0.19 0.71 0.08</dd>`;
+    $('abcUse').disabled = false;
+    drawAbcChart();
+  }
+  step();
+}
+function drawAbcChart() {
+  const host = $('chartAbc');
+  const W = Math.max(300, host.clientWidth || 560), H = 320, m = { l: 52, r: 14, t: 10, b: 34 };
+  if (!abcResult) {
+    host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Postérieur vide"><text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="${css('--muted')}" font-size="13">Le nuage de points apparaît après « Lancer l'inférence ».</text></svg>`;
+    return;
+  }
+  const { all, sum } = abcResult;
+  const keepSet = new Set(sum.keep);
+  const xmax = 0.5, ymax = 0.5;
+  const X = (v) => m.l + (v / xmax) * (W - m.l - m.r), Y = (v) => H - m.b - (v / ymax) * (H - m.t - m.b);
+  const muted = css('--muted'), line = css('--line'), cit = css('--citrus');
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Postérieur ABC">`;
+  for (let v = 0; v <= 0.5001; v += 0.1) {
+    s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${line}"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="${muted}" font-family="IBM Plex Mono, monospace">${v.toFixed(1)}</text>`;
+    s += `<text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="${muted}" font-family="IBM Plex Mono, monospace">${v.toFixed(1)}</text>`;
+  }
+  s += `<text x="${W - m.r}" y="${H - 2}" text-anchor="end" font-size="11" fill="${muted}">probabilité de ramification E</text>`;
+  s += `<text x="12" y="${m.t}" font-size="11" fill="${muted}" text-anchor="end" transform="rotate(-90 12 ${m.t})">probabilité de mort B</text>`;
+  const sample = all.length > 4000 ? all.filter((_, i) => i % Math.ceil(all.length / 4000) === 0) : all;
+  for (const p of sample) if (!keepSet.has(p) && p.h[3] < xmax && p.h[0] < ymax) s += `<circle cx="${X(p.h[3]).toFixed(1)}" cy="${Y(p.h[0]).toFixed(1)}" r="1.6" fill="${muted}" opacity="0.22"/>`;
+  for (const p of sum.keep) s += `<circle cx="${X(p.h[3]).toFixed(1)}" cy="${Y(p.h[0]).toFixed(1)}" r="3.2" fill="${cit}" stroke="${css('--panel')}" stroke-width="1"/>`;
+  const mx = X(sum.mean[3]), my = Y(sum.mean[0]);
+  s += `<path d="M${mx - 8} ${my}H${mx + 8}M${mx} ${my - 8}V${my + 8}" stroke="${css('--ink')}" stroke-width="2"/>`;
+  // courbe de croissance critique : 1 - B + E = 1  =>  B = E
+  s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(0.5)}" y2="${Y(0.5)}" stroke="${muted}" stroke-dasharray="4 4"/><text x="${X(0.42)}" y="${Y(0.45)}" font-size="11" fill="${muted}" text-anchor="end">B = E : seuil d'extinction</text>`;
+  s += '</svg>';
+  host.innerHTML = s;
+}
+const ROADMAP = [
+  ['done', 'Inférence ABC de la matrice H', 'Retrouve les probabilités des règles à partir de simples comptages X et Y, avec leur incertitude. Remplace le réglage manuel du taux de retard.'],
+  ['done', 'Processus de Galton–Watson multitype', 'Donne le vrai taux de croissance ρ(M) et le conditionnement Fibonacci exact. Sert de vérité de terrain pour entraîner les modèles suivants.'],
+  ['proto', 'Chaîne de Markov cachée apprise par EM', 'La Proposition 1 du mémoire est un modèle de Markov caché : les règles sont cachées, la chaîne X/Y est observée. Baum–Welch estime H complète, ligne par ligne, depuis les chaînes converties des branches mesurées.'],
+  ['proto', 'Inférence par réseau de neurones (NPE)', 'Un réseau entraîné sur des millions de branches simulées ici prédit la loi a posteriori de H et des sigmoïdes en une passe, à partir de statistiques de forme. Inférence instantanée sur le terrain.'],
+  ['proto', 'Numérisation par photo et nuage de points', 'Le mémoire citait la géométrie épipolaire. Aujourd\'hui : photogrammétrie ou Gaussian splatting sur smartphone, puis squelettisation et segmentation (PointNet++) pour extraire entrenœuds, angles et diamètres sans mesure manuelle.'],
+  ['proto', 'Texte vers grammaire avec un LLM', 'Un modèle de langage traduit « branche d\'oranger de trois ans, port retombant » en JSON de paramètres validé par le noyau de cet atelier. La simulation reste mathématique, le LLM sert d\'interface.'],
+  ['rech', 'L-system différentiable', 'Relaxer les tirages discrets (Gumbel-softmax) pour optimiser H, angles et sigmoïdes par descente de gradient directement contre un scan 3D ou une silhouette.'],
+  ['rech', 'Imprimés génératifs guidés par la morphogenèse', 'Un modèle de diffusion conditionné par le squelette L-system produit des imprimés photoréalistes dont la structure reste botaniquement juste et reparamétrable (rapport, coloris, densité).'],
+  ['rech', 'Patron sur mesure depuis un scan corporel', 'Un modèle prédit les mensurations et leur trajectoire de croissance (logistique double, type Preece–Baines) depuis une photo ou un scan, puis génère le patron gradé, la réserve d\'ourlet de chaque enfant et un placement optimisé sur la laize.'],
+,
+];
+function buildRoadmap() {
+  const lab = { done: 'dans l\'atelier', proto: 'prototype', rech: 'recherche' };
+  $('road').innerHTML = ROADMAP.map(([t, h, p]) => `<article><span class="pill tag ${t}">${lab[t]}</span><h4>${h}</h4><p>${p}</p></article>`).join('');
+}
+
+/* ================= Câblage ================= */
+function showTab(id) {
+  document.querySelectorAll('nav.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.id === 'tab-' + id)));
+  document.querySelectorAll('section[role="tabpanel"]').forEach((s) => (s.hidden = s.id !== 'p-' + id));
+  if (id === 'sim' && renderer) resize();
+  if (id === 'tex' && motifDirty) { drawMotif(); motifDirty = false; }
+  if (id === 'ia') drawAbcChart();
+  try { localStorage.setItem('morpho-tab', id); } catch (e) {}
+}
+document.querySelectorAll('nav.tabs button').forEach((b) => b.addEventListener('click', () => showTab(b.id.slice(4))));
+
+buildMatrixTable(); buildGrowthTable(); buildSizes(); buildRoadmap();
+try { initScene(); } catch (err) {
+  renderer = null;
+  $('viewport').insertAdjacentHTML('beforeend', '<p class="hint" style="position:absolute;inset:45% 16px auto;text-align:center">La vue 3D n\'a pas pu démarrer (WebGL ou Three.js indisponible). Les courbes, le textile et l\'IA restent utilisables.</p>');
+}
+$('preset').addEventListener('change', (e) => applyPreset(e.target.value));
+$('run').addEventListener('click', run);
+$('dice').addEventListener('click', () => { $('seed').value = 1 + Math.floor(Math.random() * 9999); run(); });
+$('seed').addEventListener('change', run);
+$('iter').addEventListener('input', syncOutputs); $('iter').addEventListener('change', run);
+['ph', 'phs', 'br', 'brs'].forEach((id) => { $(id).addEventListener('input', syncOutputs); $(id).addEventListener('change', run); });
+['tr', 'ls'].forEach((id) => $(id).addEventListener('input', () => { syncOutputs(); redraw(false); motifDirty = true; }));
+$('lateral').addEventListener('change', run);
+['colorMode', 'showLeaves', 'showFruits', 'showDead'].forEach((id) => $(id).addEventListener('change', () => redraw(false)));
+$('age').addEventListener('input', (e) => { setAge(+e.target.value); motifDirty = true; });
+$('play').addEventListener('click', togglePlay);
+$('logScale').addEventListener('change', drawCountsChart);
+$('forecast').addEventListener('click', forecast);
+$('fitPhi').addEventListener('click', () => {
+  const r = M.fitGrowthRate(state.H, PHI, lateralVal());
+  if (!r) { toast('Impossible d\'atteindre φ avec cette matrice (trop de mort B)'); return; }
+  state.H = r.H; writeMatrix(); showRates(); run();
+  toast(`Colonne E multipliée par ${r.s.toFixed(3)} : ρ(M) = ${r.rate.toFixed(4)}`);
+});
+$('resetH').addEventListener('click', () => applyPreset(state.preset));
+document.querySelectorAll('[data-export]').forEach((b) => b.addEventListener('click', () => {
+  const k = b.dataset.export;
+  if (k === 'max') copyText(M.toMaxScript(state.geo), 'MAXScript');
+  if (k === 'obj') copyText(M.toOBJ(state.geo), 'OBJ');
+  if (k === 'lstr') copyText(M.toLString(state.sim), 'Chaîne L-system');
+  if (k === 'json') copyText(JSON.stringify({ H: state.H, h1: state.h1, ...simParams(+$('iter').value), growth: state.growth }, null, 2), 'Paramètres');
+}));
+['repeat', 'proj', 'palette'].forEach((id) => $(id).addEventListener('change', drawMotif));
+['tile', 'stroke'].forEach((id) => $(id).addEventListener('input', drawMotif));
+['ease', 'sa'].forEach((id) => $(id).addEventListener('input', drawPattern));
+['hemRes', 'fillMotif', 'focusSize'].forEach((id) => $(id).addEventListener('change', drawPattern));
+$('refreshMotif').addEventListener('click', drawMotif);
+$('copyMotif').addEventListener('click', () => motifCache && copyText(motifCache, 'SVG du motif'));
+$('copyPattern').addEventListener('click', () => state.patternSVG && copyText(state.patternSVG, 'Patron SVG'));
+$('doFit').addEventListener('click', doFit);
+$('abcRun').addEventListener('click', runABC);
+$('abcFromSim').addEventListener('click', () => {
+  const s = state.sim; $('obsX').value = s.hist.X[s.iterations]; $('obsY').value = s.hist.Y[s.iterations]; $('obsF').value = s.hist.f[s.iterations]; $('obsG').value = s.hist.g[s.iterations]; $('obsN').value = s.iterations;
+  toast('Comptages de la simulation actuelle chargés');
+});
+$('abcUse').addEventListener('click', () => {
+  if (!abcResult) return;
+  const h = abcResult.sum.mean;
+  state.H = [h, h, h, h].map((r) => r.slice()); state.h1 = h.slice(); writeMatrix();
+  $('iter').value = abcResult.N; syncOutputs(); showTab('sim'); run();
+  toast('Probabilités inférées appliquées à la simulation');
+});
+let rzT = null;
+window.addEventListener('resize', () => { clearTimeout(rzT); rzT = setTimeout(() => { if (state.sim) { drawCountsChart(); drawGrowthChart(); drawAbcChart(); } }, 150); });
+const mq = window.matchMedia('(prefers-color-scheme: dark)');
+const retheme = () => { if (state.sim) { redraw(false); drawCountsChart(); drawGrowthChart(); drawAbcChart(); motifDirty = true; } };
+mq.addEventListener && mq.addEventListener('change', retheme);
+new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+applyPreset('orange1');
+let startTab = 'sim';
+try { startTab = localStorage.getItem('morpho-tab') || 'sim'; } catch (e) {}
+const hashTab = location.hash.replace('#', '');
+if (['sim', 'tex', 'ia', 'guide'].includes(hashTab)) startTab = hashTab;
+showTab(startTab);
+})();
+</script>
+</body>
+</html>
