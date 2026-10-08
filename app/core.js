@@ -127,8 +127,9 @@
     const maxNodes = params.maxNodes || 40000;
     const r = rng(params.seed || 1);
     const ph = params.phyllo || { mean: 138.1, sd: 4 };
-    const br = params.branch || { mean: 38, sd: 22, min: 8, max: 85 };
+    const br = params.branch || { mean: 38, sd: 22, min: 15, max: 85 };
     const nz = params.noise || { len: 0.34 / 8, rad: 0.07 / 1.9 };
+    const bendSd = params.bend == null ? 7 : params.bend; // courbure aléatoire de chaque entrenœud (°)
 
     const nodes = []; // {type: 'X'|'Y', birth, parent, lateral, roll, pitch, ln, rn}
     let buds = [{ node: -1, lateral: false, state: -1 }];
@@ -149,6 +150,7 @@
         lateral: bud.lateral,
         roll: ph.mean + ph.sd * gauss(r),
         spin: r() * 360,
+        bend: bendSd * gauss(r),
         pitch,
         ln: gauss(r) * nz.len,
         rn: gauss(r) * nz.rad,
@@ -247,6 +249,12 @@
       if (nd.lateral) {
         // angle de branchement « # »
         H = rotate(H, L, nd.pitch); U = rotate(U, L, nd.pitch);
+      }
+      if (nd.bend) {
+        // courbure : l'entrenœud dévie d'un petit angle dans une direction quelconque
+        // autour de son axe (angles « & » et « > » mesurés dans le mémoire)
+        const ax = rotate(L, H, nd.spin || 0);
+        H = norm(rotate(H, ax, nd.bend)); L = norm(rotate(L, ax, nd.bend)); U = norm(cross(H, L));
       }
       if (trop) {
         // tropisme : légère inclinaison de H vers la verticale (ou vers le sol si < 0)
